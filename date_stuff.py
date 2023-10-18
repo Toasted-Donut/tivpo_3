@@ -28,4 +28,35 @@ def month_short_name(month=1):
         return 'err'
     return months[month]
 
+def get_quarter(day=date.today()):
+    day = day.replace(day=1)
+    month = day.month
+    if month in [3, 6, 9, 12]:
+        return day
+    if month in [1, 4, 7, 10]:
+        return prev_month(day)
+    if month in [2, 5, 8, 11]:
+        return prev_month(prev_month(day))
+
+
+# TDD
+def quarter_name(month=12):
+    quarters = ["Зима", "Весна", "Лето", "Осень", "Зима"]
+    return quarters[month // 3]
+
+
+# BDD
+def prev_month(day=date.today()):
+    day = day.replace(month=day.month - 1)
+    return day
+
+
+def prev_month2(day=date.today()):
+    month = day.month - 1
+    if month == 0:
+        day = day.replace(year=day.year-1, month=12)
+        return day
+    else:
+        day = day.replace(month=day.month-1)
+        return day
 
