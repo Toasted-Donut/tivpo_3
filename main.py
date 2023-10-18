@@ -11,6 +11,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from date_stuff import *
 from currency_stuff import *
+from predict_stuff import extrapolate_currency_rate
 
 
 if __name__ == '__main__':
@@ -147,10 +148,7 @@ if __name__ == '__main__':
     week_btn = Radiobutton(tab_dynamics, text="Неделя", value=1, variable=period, command=change_periods)
     week_btn.select()
     week_btn.grid(column=1, row=1, sticky=W)
-    month_btn = Radiobutton(tab_dynamics, text="Месяц", value=2, variable=period, command=change_periods)
-    month_btn.grid(column=1, row=2, sticky=W)
-    quarter_btn = Radiobutton(tab_dynamics, text="Квартал", value=3, variable=period, command=change_periods)
-    quarter_btn.grid(column=1, row=3, sticky=W)
+
 
     label_3 = Label(tab_dynamics, text="Выбор периода")
     label_3.grid(column=2, row=0)
@@ -224,9 +222,95 @@ if __name__ == '__main__':
         plt.grid()
         plot_widget.grid(column=2, row=5)
 
+    def expand_graf():
+        start = dates_list[comb_periods.current()]["start"]
+        end = dates_list[comb_periods.current()]["end"]
+        per = period.get()
+        window.geometry("1280x800")
+        matplotlib.use('TkAgg')
+        fig = plt.figure()
+        canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(fig, master=tab_dynamics)
+        plot_widget = canvas.get_tk_widget()
+        fig.clear()
+        x_y = {"x": [], "y": []}
+        day = start
+        if per == 1:
+            while day <= end:
+                day_dict = get_valutes((today - day).days)
+                course = float((day_dict["Value"][comb_valutes.current()]).replace(',', '.')) / float(
+                    (day_dict["Nominal"][comb_valutes.current()]).replace(',', '.'))
+                x_y["y"].append(course)
+                x_y["x"].append(get_date((today - day).days, False).strftime("%d/%m"))
+                day = get_date(-1, False, day)
+            extra = extrapolate_currency_rate(x_y["y"])
+            for i in range(0,5):
+                x_y["y"].append(extra[i])
+                x_y["x"].append(get_date(-i-1,False).strftime("%d/%m"))
+            plt.plot(x_y["x"], x_y["y"])
+            xtick_location = x_y["x"]
+            xtick_labels = [x[::] for x in x_y["x"]]
+            plt.xticks(ticks=xtick_location, labels=xtick_labels, fontsize=10, alpha=.7)
+        elif per == 2:
+            while day <= end:
+                day_dict = get_valutes((today - day).days)
+                course = float((day_dict["Value"][comb_valutes.current()]).replace(',', '.')) / float(
+                    (day_dict["Nominal"][comb_valutes.current()]).replace(',', '.'))
+                x_y["y"].append(course)
+                x_y["x"].append(get_date((today - day).days, False).strftime("%d/%m"))
+                day = get_date(-1, False, day)
+            extra = extrapolate_currency_rate(x_y["y"])
+            for i in range(0, 5):
+                x_y["y"].append(extra[i])
+                x_y["x"].append(get_date(-i - 1, False).strftime("%d/%m"))
+            plt.plot(x_y["x"], x_y["y"])
+            xtick_location = x_y["x"][::2]
+            xtick_labels = [x[::] for x in x_y["x"][::2]]
+            plt.xticks(ticks=xtick_location, labels=xtick_labels, fontsize=6, alpha=.7)
+        elif per == 3:
+            while day <= end:
+                day_dict = get_valutes((today - day).days)
+                course = float((day_dict["Value"][comb_valutes.current()]).replace(',', '.')) / float(
+                    (day_dict["Nominal"][comb_valutes.current()]).replace(',', '.'))
+                x_y["y"].append(course)
+                x_y["x"].append(get_date((today - day).days, False).strftime("%d/%m"))
+                day = get_date(-3, False, day)
+            extra = extrapolate_currency_rate(x_y["y"])
+            for i in range(0, 5):
+                x_y["y"].append(extra[i])
+                x_y["x"].append(get_date(-i*3 - 1, False).strftime("%d/%m"))
+
+            plt.plot(x_y["x"], x_y["y"])
+            xtick_location = x_y["x"][::2]
+            xtick_labels = [x[::] for x in x_y["x"][::2]]
+            plt.xticks(ticks=xtick_location, labels=xtick_labels, fontsize=6, alpha=.7)
+        elif per == 4:
+            while day <= end:
+                day_dict = get_valutes((today - day).days)
+                course = float((day_dict["Value"][comb_valutes.current()]).replace(',', '.')) / float(
+                    (day_dict["Nominal"][comb_valutes.current()]).replace(',', '.'))
+                x_y["y"].append(course)
+                x_y["x"].append(get_date((today - day).days, False))
+                day = get_date(-8, False, day)
+            extra = extrapolate_currency_rate(x_y["y"])
+            for i in range(0, 5):
+                x_y["y"].append(extra[i])
+                x_y["x"].append(get_date(-i*8 - 1, False).strftime("%d/%m"))
+
+            plt.plot(x_y["x"], x_y["y"])
+            xtick_location = x_y["x"][::4]
+            for i in range(len(x_y["x"])):
+                buf_date = x_y["x"][i]
+                x_y["x"][i] = month_short_name(buf_date.month)
+
+            xtick_labels = [x[::] for x in x_y["x"][::4]]
+            plt.xticks(ticks=xtick_location, labels=xtick_labels, fontsize=6, alpha=.7)
+        plt.grid()
+        plot_widget.grid(column=2, row=5)
 
     build_graf_btn = Button(tab_dynamics, text="Построить график", command=build_graf)
+    build_predict_btn = Button(tab_dynamics, text="Предсказать курс", command=expand_graf)
     build_graf_btn.grid(column=0, row=5)
+    build_predict_btn.grid(column=0, row=6)
     # Конец вкладки 2
     ##
     #
