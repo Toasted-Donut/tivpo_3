@@ -4,7 +4,7 @@ from date_stuff import get_date
 from behave import *
 
 
-'start date is today'
+@given('start date is today')
 def step_impl(context):
     context.date = date.today()
 
@@ -19,7 +19,7 @@ def step_impl(context):
     assert context.date.day+5 == date.today().day
 
 
-'start date is 12.03.2023'
+@given('start date is 12.03.2023')
 def step_impl(context):
     context.date = date(2023,3,12)
 
