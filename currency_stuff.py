@@ -6,7 +6,10 @@ from date_stuff import get_date
 # TDD
 def request(days_delta=0):
     response = urllib.request.urlopen(f"http://www.cbr.ru/scripts/XML_daily.asp?date_req={get_date(days_delta)}")
-    return response
+    if response.code == 200:
+        return response
+    raise Exception("Bad Response")
+    
 
 
 # BDD
