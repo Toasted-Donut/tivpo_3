@@ -42,12 +42,18 @@ def get_quarter(day=date.today()):
 
 # TDD
 def quarter_name(month=12):
+    if month not in range(12):
+        return "err"
     quarters = ["Зима", "Весна", "Лето", "Осень", "Зима"]
     return quarters[month // 3]
 
 
 # BDD
 def prev_month(day=date.today()):
-    day = day.replace(month=day.month - 1)
+    month = day.month - 1
+    if month == 0:
+        day = day.replace(year=day.year - 1, month=12)
+    else:
+        day = day.replace(month=day.month - 1)
     return day
 
