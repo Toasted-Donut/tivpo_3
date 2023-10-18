@@ -226,7 +226,9 @@ if __name__ == '__main__':
 
 
     build_graf_btn = Button(tab_dynamics, text="Построить график", command=build_graf)
+    build_predict_btn = Button(tab_dynamics, text="Предсказать курс")
     build_graf_btn.grid(column=0, row=5)
+    build_predict_btn.grid(column=0, row=6)
     # Конец вкладки 2
     ##
     #
